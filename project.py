@@ -31,11 +31,10 @@ from sklearn import svm
 # 6 - In case of Ridge & Lasso try # numbers of alpha parameter to determine best performance
 
 
-
-
 def description(ds):
     print(f'Shape of dataset : {ds.shape}')
     print(f'stats of dataset: \n {ds.describe()}')
+
 
 def performance(title, reg_model, X,y, y_test, predicted_values, columns_names):
     print(title)
@@ -48,6 +47,7 @@ def performance(title, reg_model, X,y, y_test, predicted_values, columns_names):
         print("Intercept: %.2f" % reg_model.intercept_)
     print("Max Error ( close to 0.0 the better): %.2f" % max_error(y_test, predicted_values))
 
+
 def draw_heatmap(df, path):
     os.makedirs(path, exist_ok=True)
     sns.set()
@@ -58,16 +58,39 @@ def draw_heatmap(df, path):
     plt.savefig(f'{path}/diabetes_heatmap.png')
     plt.clf()
 
+
 def process_models(data):
     names = list()
     scores = list()
 
     for name, model in data["models"]:
+        if name == "KNR":
+            scores.append(process_knr(model, data, scores, names))
+            names.append(name)
+        else:
+            model.fit(data["X_train"], data["y_train"])
+            predicted_values = model.predict(data["X_test"])
+            scores.append([ mean_squared_error(data["y_test"], predicted_values), r2_score(data["y_test"], predicted_values)])
+            names.append(name)
+    return pd.DataFrame({'Name': names, 'Score': scores})
+
+
+def process_knr(model, data, scores, names):
+    # we will process a loop to find the best performance for KNN for max_number_of_neighbors
+    neighbor = 1
+    min_mean_sqr_error = 10000000
+    max_r2_score = 0
+    while neighbor < max_number_of_neighbors:
+        model.n_neighbors = neighbor
         model.fit(data["X_train"], data["y_train"])
         predicted_values = model.predict(data["X_test"])
-        scores.append([ mean_squared_error(data["y_test"], predicted_values), r2_score(data["y_test"], predicted_values)])
-        names.append(name)
-    return pd.DataFrame({'Name': names, 'Score': scores})
+        mean_sqr_error =  mean_squared_error(data["y_test"], predicted_values)
+        r2_score = r2_score(data["y_test"], predicted_values)
+        if min_mean_sqr_error < mean_sqr_error & max_r2_score > r2_score:
+            min_mean_sqr_error = mean_sqr_error
+            max_r2_score = r2_score
+        neighbor = neighbor + 1
+    return s[min_mean_sqr_error, max_r2_score]
 
 
 diabetes = load_diabetes()
@@ -99,6 +122,8 @@ data_dict = {
             "y_train": y_train,
             "y_test": y_test
 }
+
+
 for i in range(max_number_of_iterations + 1):
     result.append(process_models(data_dict))
 print(result)
