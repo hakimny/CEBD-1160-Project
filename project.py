@@ -65,7 +65,10 @@ def process_models(data):
 
     for name, model in data["models"]:
         if name == "KNR":
-            scores.append(process_knr(model, data, scores, names))
+            scores.append(process_knr(model, data))
+            names.append(name)
+        elif name == "LS" or name == "LR":
+            scores.append(process_ridge_lasso(model, data))
             names.append(name)
         else:
             model.fit(data["X_train"], data["y_train"])
@@ -75,22 +78,42 @@ def process_models(data):
     return pd.DataFrame({'Name': names, 'Score': scores})
 
 
-def process_knr(model, data, scores, names):
+def process_knr(model, data):
     # we will process a loop to find the best performance for KNN for max_number_of_neighbors
     neighbor = 1
     min_mean_sqr_error = 10000000
     max_r2_score = 0
     while neighbor < max_number_of_neighbors:
+
         model.n_neighbors = neighbor
         model.fit(data["X_train"], data["y_train"])
         predicted_values = model.predict(data["X_test"])
-        mean_sqr_error =  mean_squared_error(data["y_test"], predicted_values)
-        r2_score = r2_score(data["y_test"], predicted_values)
-        if min_mean_sqr_error < mean_sqr_error & max_r2_score > r2_score:
+        mean_sqr_error = mean_squared_error(data["y_test"], predicted_values)
+        r2_score_calc = r2_score(data["y_test"], predicted_values)
+        if min_mean_sqr_error < mean_sqr_error and max_r2_score > r2_score_calc:
             min_mean_sqr_error = mean_sqr_error
-            max_r2_score = r2_score
+            max_r2_score = r2_score_calc
         neighbor = neighbor + 1
-    return s[min_mean_sqr_error, max_r2_score]
+    return [min_mean_sqr_error, max_r2_score]
+
+def process_ridge_lasso(model, data):
+    # We will try to find best alpha coefficient for best performance results for Ridge & lasso Estimators
+    c_alpha = 0
+    step = 0.001
+    max_alpha = 20
+    min_mean_sqr_error = 10000000
+    max_r2_score = 0
+    while c_alpha <= max_alpha:
+        model.alpha = c_alpha
+        model.fit(data["X_train"], data["y_train"])
+        predicted_values = model.predict(data["X_test"])
+        mean_sqr_error = mean_squared_error(data["y_test"], predicted_values)
+        r2_score_calc = r2_score(data["y_test"], predicted_values)
+        if min_mean_sqr_error < mean_sqr_error and max_r2_score > r2_score_calc:
+            min_mean_sqr_error = mean_sqr_error
+            max_r2_score = r2_score_calc
+        c_alpha = c_alpha + step
+    return [min_mean_sqr_error, max_r2_score]
 
 
 diabetes = load_diabetes()
@@ -100,11 +123,11 @@ y = diabetes.target
 df = pd.DataFrame(data=diabetes['data'],columns=diabetes['feature_names'])
 
 path = 'plots/'
-draw_heatmap(df,path)
+# draw_heatmap(df, path)
 
 max_number_of_neighbors = 50
 max_number_of_iterations = 20
-alpha = 0.1
+
 models = list()
 result = list()
 models.append(('LR', LinearRegression()))
@@ -123,10 +146,86 @@ data_dict = {
             "y_test": y_test
 }
 
+# Get Optimized Number of Neighbors for KNR
 
-for i in range(max_number_of_iterations + 1):
-    result.append(process_models(data_dict))
-print(result)
+
+def process_optimized_knr(data):
+    # we will process a loop to find the best performance for KNN for max_number_of_neighbors
+    neighbor = 1
+    min_mean_sqr_error = 0
+    max_r2_score = 0
+    opt_neighbor = 0
+    while neighbor < max_number_of_neighbors:
+        model = KNeighborsRegressor()
+        model.n_neighbors = neighbor
+        model.fit(data["X_train"], data["y_train"])
+        predicted_values = model.predict(data["X_test"])
+        mean_sqr_error = mean_squared_error(data["y_test"], predicted_values)
+        r2_score_calc = r2_score(data["y_test"], predicted_values)
+        if max_r2_score < abs(r2_score_calc):
+            min_mean_sqr_error = mean_sqr_error
+            max_r2_score = r2_score_calc
+            opt_neighbor = neighbor
+        neighbor = neighbor + 1
+    return opt_neighbor
+
+
+def process_optimized_lasso(data):
+    c_alpha = 0.001
+    step = 0.001
+    max_alpha = 20
+    min_mean_sqr_error = 10000000
+    max_r2_score = 0
+    opt_alpha = 0
+    while c_alpha <= max_alpha:
+        model = Lasso()
+        model.alpha = c_alpha
+        model.fit(data["X_train"], data["y_train"])
+        predicted_values = model.predict(data["X_test"])
+        mean_sqr_error = mean_squared_error(data["y_test"], predicted_values)
+        r2_score_calc = r2_score(data["y_test"], predicted_values)
+        if min_mean_sqr_error < mean_sqr_error and max_r2_score > r2_score_calc:
+            min_mean_sqr_error = mean_sqr_error
+            max_r2_score = r2_score_calc
+            opt_alpha = c_alpha
+            print(f'Lasso | Mean Sqr Error: {min_mean_sqr_error} | R2 Score: {max_r2_score} | alpha: {opt_alpha}')
+        c_alpha = c_alpha + step
+    return opt_alpha
+
+
+def process_optimized_ridge(data):
+    c_alpha = 0.001
+    step = 0.001
+    max_alpha = 20
+    min_mean_sqr_error = 10000000
+    max_r2_score = 0
+    opt_alpha = 0
+    while c_alpha <= max_alpha:
+        model = Lasso()
+        model.alpha = c_alpha
+        model.fit(data["X_train"], data["y_train"])
+        predicted_values = model.predict(data["X_test"])
+        mean_sqr_error = mean_squared_error(data["y_test"], predicted_values)
+        r2_score_calc = r2_score(data["y_test"], predicted_values)
+        if min_mean_sqr_error < mean_sqr_error and max_r2_score > r2_score_calc:
+            min_mean_sqr_error = mean_sqr_error
+            max_r2_score = r2_score_calc
+            opt_alpha = c_alpha
+            print(f'Ridge | Mean Sqr Error: {min_mean_sqr_error} | R2 Score: {max_r2_score} | alpha: {opt_alpha}')
+        c_alpha = c_alpha + step
+    return opt_alpha
+
+
+optimized_neighbor = process_optimized_knr(data_dict)
+optimized_lasso_alpha = process_optimized_lasso(data_dict)
+optimized_bridge_alpha = process_optimized_ridge(data_dict)
+
+print(optimized_neighbor)
+
+#for i in range(max_number_of_iterations + 1):
+
+# result.append(process_models(data_dict))
+# print(process_models(data_dict))
 # # Linear regression
 # lr = LinearRegression()
 # lr.fit(X_train, y_train)
