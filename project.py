@@ -38,16 +38,16 @@ def description(ds):
     print(f'stats of dataset: \n {ds.describe()}')
 
 
-def performance(title, reg_model, X, y, y_test, predicted_values, columns_names):
-    print(title)
-    if title == "Linear Regression Performance":
-        print(f"Named Coeficients: {pd.DataFrame(reg_model.coef_, columns_names)}")
-    print("Mean squared error ( close to 0 the better): %.2f"
-          % mean_squared_error(y_test, predicted_values))
-    print('Variance score ( close to 1.0 the better ): %.2f' % r2_score(y_test, predicted_values))
-    if title == "Linear Regression Performance":
-        print("Intercept: %.2f" % reg_model.intercept_)
-    print("Max Error ( close to 0.0 the better): %.2f" % max_error(y_test, predicted_values))
+# def performance(title, reg_model, X, y, y_test, predicted_values, columns_names):
+#     print(title)
+#     if title == "Linear Regression Performance":
+#         print(f"Named Coeficients: {pd.DataFrame(reg_model.coef_, columns_names)}")
+#     print("Mean squared error ( close to 0 the better): %.2f"
+#           % mean_squared_error(y_test, predicted_values))
+#     print('Variance score ( close to 1.0 the better ): %.2f' % r2_score(y_test, predicted_values))
+#     if title == "Linear Regression Performance":
+#         print("Intercept: %.2f" % reg_model.intercept_)
+#     print("Max Error ( close to 0.0 the better): %.2f" % max_error(y_test, predicted_values))
 
 
 def draw_heat_map(df, path):
@@ -246,38 +246,3 @@ for p in axis.patches:
 plt.savefig(f'{path}/diabetes_data_max_r2_score_per_model.png')
 
 plt.close()
-# result.append(process_models(data_dict))
-# print(process_models(data_dict))
-# # Linear regression
-# lr = LinearRegression()
-# lr.fit(X_train, y_train)
-#
-# # Predicting the results for our test dataset
-# predicted_values = lr.predict(X_test)
-# performance("Linear Regression Performance",lr, X,y,y_test,predicted_values,columns_names)
-#
-#
-#
-# neigh = KNeighborsRegressor(n_neighbors=100)
-# neigh
-# neigh.fit(X_train, y_train)
-# predicted_values = neigh.predict(X_test)
-# performance("K Neighbors Regressor Performance",neigh, X,y,y_test,predicted_values,columns_names)
-#
-#
-#
-# clf = svm.SVR()
-# clf.fit(X_train, y_train)
-# predicted_values = clf.predict(X_test)
-# performance("Support Vector Regression",clf, X,y,y_test,predicted_values,columns_names)
-#
-#
-# reg = linear_model.Ridge(alpha=.5)
-# reg.fit(X_train, y_train)
-# predicted_values = reg.predict(X_test)
-# performance("Ridge Regression",reg, X,y,y_test,predicted_values,columns_names)
-#
-# lasso = linear_model.Lasso(alpha=0.1)
-# lasso.fit(X_train, y_train)
-# predicted_values = lasso.predict(X_test)
-# performance("Lasso Regression",lasso, X,y,y_test,predicted_values,columns_names)
