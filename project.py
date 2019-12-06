@@ -341,8 +341,6 @@ def process_optimized_lasso_step2(data):
                     "r2_score": r2_score_calc}
 
 
-# df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
-# df["Y"] = diabetes.target
 X = df.drop(["s4", "Y"], axis=1)   #Feature Matrix
 y = df["Y"]          #Target Variable
 df.head()
