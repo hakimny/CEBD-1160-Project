@@ -37,8 +37,8 @@ We started our study by visualizing our data to give us more insight about how f
 
 Before we started our testing we used the SciKit Learn Algorithms Cheat Sheet to determine the best regressors candidates for our study.
 
-sk-learn-cheat-sheet
-![SK Learn Algorithm Cheat Sheet](./plots/sk-learn-cheat-sheet)
+
+![SK Learn Algorithm Cheat Sheet](./plots/sk-learn-cheat-sheet.png)
 
 ### Methods
 
