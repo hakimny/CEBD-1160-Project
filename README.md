@@ -28,27 +28,33 @@ More in depth study of the correlation values between features and the target, g
 
 ### Abstract
 
-Derived from Diffusion-Weighted Magnetic Resonance Imaging (DWI, d-MRI), we have derived "maps" of structural connectivity between brain regions.
-Using these data, we may be able to understand relationships between brain regions and their relative connectivity, which can then be used for targetted interventions in neurodegenerative diseases.
-Here, we tried to predict the connectivity between two unique brain regions based on all other known brain connectivity maps.
-Based on the preliminary performance of this regressor, we found that the current model didn't provide consistent performance, but shows promise for success with more sophisticated methods.
+Ten baseline variables, age, sex, body mass index, average blood pressure, and six blood serum measurements were obtained for each of n = 442 diabetes patients, as well as the response of interest, a quantitative measure of disease progression one year after baseline.
+Number of Attributes:442
+First 10 columns are numeric predictive values
+Target:	Column 11 is a quantitative measure of disease progression one year after baseline Y
 
+Attribute Information:
+Age, Sex, Body mass index, Average blood pressure, S1, S2, S3, S4, S5, S6
 
 ### Introduction
 
-The graphs used are structural "connectomes" from the publicly available BNU1 dataset([https://neurodata.io/mri-cloud/](https://neurodata.io/mri-cloud/)), processed by Greg Kiar using the ndmg software library [https://github.com/neurodata/ndmg](https://github.com/neurodata/ndmg).
-The graphs used here are only a subset of those in the dataset, and in particular only include several of the edges pertaining to the hippocampus and entorhinal cortex for both the left and right hemispheres. 
+We started our study by visualizing our data to give us more insight about how features are structured and related to Target.
 
 ### Methods
 
-The method used for modelling this data was the Ridge Regressor built into scikit-learn.
-Pseudocode (and in particular, the objective function being minimized) can be found [here](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html).
-Simply put, this objective function minimizes the linear least squares function between predicted and expected value, while being regularized by the L2 norm of the estimated weight matrix.
-This method was chosen because of its simplicity.
+We started our study by testing 5 regressors models, Linear Regression, Lasso Regression, Ridge Regression,  k-nearest neighbors & Epsilon-Support Vector Regression (SVR).
 
-The data itself was organized into a matrix, and all connections between brain regions with available data were sorted, and then transformed into a table. We attempted to predict the connection found at location 12 in the figure below, from all other connections.
+For Lasso & Ridge Regressors we iterated over the value of alpha coefficient to find the best optimized value that leads to best R2 Score.
 
-![matrix](./figures/average_graph.png)
+For k-nearest neighbors, we iterated over the values of number of neighbors to find the best optimized vale that leads to best R2 Score.
+
+The idea was to find the best possible score for all of those regressors' models, we run our models in a 20 iterations loop and collected R2 Scores & Mean Squared Error.
+
+The following figure show the average & max R2 Scores collected during our tests.
+
+![Average R2 Score](./plots/diabetes_data_average_r2_score_per_model.png)
+
+
 
 ### Results
 
@@ -65,6 +71,8 @@ The method used here does not solve the problem of identifying the strength of c
 
 ### References
 The links referenced were included in my discussion, above.
+
+https://www4.stat.ncsu.edu/~boos/var.select/diabetes.html
 
 https://scikit-learn.org/stable/tutorial/machine_learning_map/index.html
 
