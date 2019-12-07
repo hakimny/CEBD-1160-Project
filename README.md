@@ -13,9 +13,6 @@
 
 Find correlation between age/BMI to determine the illness progress one year after baseline.
 
-## More Refined Research Question
-
-More in depth study of the correlation values between features and the target, gave more insights about how we should refine the reserach question, Based on 
 
 ### Abstract
 
@@ -130,7 +127,7 @@ The following results were obtained for R2 Score average & max values.
 
 ### Discussion
 
-The methods used here does not solve the problem of improving the performance score of our model, even though we were able to slightly increase the Max value to 61% from 58% the average value fell from 49% to 47%, further analysis is required for deeper understanding, my guess is that if we have more data we could've obtained better result the number of patients = 442 remains a small sample.
+The methods used here does not solve the problem of improving the performance score of our model, even though we were able to slightly increase the Max value to 61% from 58%, the Average value fell from 49% to 47%, further analysis is required for deeper understanding, my guess is that if we have more data we could've obtained better result the number of patients = 442 remains a small sample, thus we were not able to fully answer our research question.
 
 
 ### References
